@@ -1,0 +1,42 @@
+import { redirect } from "next/navigation";
+
+import { createClient } from "@/lib/supabase/server";
+import { InfoIcon } from "lucide-react";
+import { FetchDataSteps } from "@/components/tutorial/fetch-data-steps";
+import { Suspense } from "react";
+
+async function UserDetails() {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getClaims();
+
+  if (error || !data?.claims) {
+    redirect("/auth/login");
+  }
+
+  return JSON.stringify(data.claims, null, 2);
+}
+
+export default function ProtectedPage() {
+  return (
+    <div className="flex-1 w-full flex flex-col gap-12">
+      <div className="w-full">
+        <div className="border border-white/[0.08] bg-white/[0.04] backdrop-blur-sm text-sm p-3 px-5 rounded-xl text-white/70 flex gap-3 items-center">
+          <InfoIcon size="16" strokeWidth={2} />
+          这是需要登录才能查看的受保护页面
+        </div>
+      </div>
+      <div className="flex flex-col gap-2 items-start">
+        <h2 className="font-bold text-2xl mb-4 text-white">用户信息</h2>
+        <pre className="text-xs font-mono p-3 rounded-xl border border-white/[0.08] bg-white/[0.04] text-white/80 max-h-32 overflow-auto">
+          <Suspense>
+            <UserDetails />
+          </Suspense>
+        </pre>
+      </div>
+      <div>
+        <h2 className="font-bold text-2xl mb-4 text-white">后续步骤</h2>
+        <FetchDataSteps />
+      </div>
+    </div>
+  );
+}
