@@ -35,7 +35,10 @@ export async function POST(req: NextRequest) {
     const userContent: OpenAI.Chat.Completions.ChatCompletionContentPart[] = []
 
     if (text?.trim()) {
-      userContent.push({ type: 'text', text: `请从以下内容中提取待办事项：\n${text}` })
+      userContent.push({
+        type: 'text',
+        text: `请从以下内容中提取待办事项：\n${text}`,
+      })
     }
 
     if (imageUrl) {
@@ -47,7 +50,10 @@ export async function POST(req: NextRequest) {
 
     if (!text?.trim() && imageUrl) {
       // 纯图片场景：添加提取指令
-      userContent.unshift({ type: 'text', text: '请从这张图片中提取所有待办事项。' })
+      userContent.unshift({
+        type: 'text',
+        text: '请从这张图片中提取所有待办事项。',
+      })
     }
 
     const completion = await openai.chat.completions.create({
@@ -97,7 +103,9 @@ export async function POST(req: NextRequest) {
 
     const insertData = todos.map((todo, index) => ({
       text: todo.text,
-      priority: ['low', 'medium', 'high'].includes(todo.priority) ? todo.priority : 'medium',
+      priority: ['low', 'medium', 'high'].includes(todo.priority)
+        ? todo.priority
+        : 'medium',
       completed: false,
       image_url: index === 0 ? imageUrl || null : null,
     }))
